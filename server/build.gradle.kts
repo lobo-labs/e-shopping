@@ -21,3 +21,15 @@ dependencies {
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
 }
+
+val copyWebDist = tasks.register<Copy>("copyWebDist") {
+    // Depende da task de build do Wasm (ou JS se preferir)
+    dependsOn(":composeApp:wasmJsBrowserDistribution")
+    
+    from("../composeApp/build/dist/wasmJs/productionExecutable")
+    into("src/main/resources/dist")
+}
+
+tasks.named("processResources") {
+    dependsOn(copyWebDist)
+}

@@ -2,6 +2,7 @@ package co.lobolabs.eshopping
 
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,8 +14,13 @@ fun main() {
 
 fun Application.module() {
     routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
+        // Serve a aplicação Web (Wasm/JS) a partir da pasta resources/dist
+        staticResources("/", "dist") {
+            default("index.html")
+        }
+
+        get("/api") {
+            call.respondText("API is running!")
         }
     }
 }
