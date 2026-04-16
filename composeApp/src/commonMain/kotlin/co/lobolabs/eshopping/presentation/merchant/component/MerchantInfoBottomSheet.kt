@@ -31,12 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.data.MerchantSchedule
+import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantAboutPage
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantSchedulePage
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
 
@@ -49,46 +50,41 @@ enum class MerchantInfoTabs(val text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MerchantInfoBottomSheet(
+    merchant: Merchant,
     schedule: List<MerchantSchedule> = MerchantSchedule.defaultSchedule,
     onDismissRequest: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
-    var selectedTab by remember { mutableStateOf(MerchantInfoTabs.SCHEDULE) }
+    var selectedTab by remember { mutableStateOf(MerchantInfoTabs.ABOUT) }
 
-    if (LocalInspectionMode.current) {
+
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        containerColor = Color.White,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .width(40.dp)
+                    .height(4.dp)
+                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.dp))
+            )
+        }
+    ) {
         MerchantInfoModalContent(
+            merchant = merchant,
             selectedTab = selectedTab,
             schedule = schedule,
             onTabSelected = { selectedTab = it },
             onDismissRequest = onDismissRequest
         )
-    } else {
-        ModalBottomSheet(
-            onDismissRequest = onDismissRequest,
-            sheetState = sheetState,
-            containerColor = Color.White,
-            dragHandle = {
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .width(40.dp)
-                        .height(4.dp)
-                        .background(Color(0xFFE0E0E0), RoundedCornerShape(2.dp))
-                )
-            }
-        ) {
-            MerchantInfoModalContent(
-                selectedTab = selectedTab,
-                schedule = schedule,
-                onTabSelected = { selectedTab = it },
-                onDismissRequest = onDismissRequest
-            )
-        }
     }
 }
 
 @Composable
 fun MerchantInfoModalContent(
+    merchant: Merchant,
     selectedTab: MerchantInfoTabs,
     schedule: List<MerchantSchedule>,
     onTabSelected: (MerchantInfoTabs) -> Unit,
@@ -144,6 +140,7 @@ fun MerchantInfoModalContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         when (selectedTab) {
+            MerchantInfoTabs.ABOUT -> MerchantAboutPage(merchant, schedule.last())
             MerchantInfoTabs.SCHEDULE -> MerchantSchedulePage(schedule)
             else -> Box(
                 modifier = Modifier
@@ -205,8 +202,27 @@ fun MerchantScheduleRow(day: String, hours: String, isHighlighted: Boolean) {
 
 @Composable
 @Preview(showBackground = true)
-private fun MerchantInfoBottomSheetPreview() {
+private fun PreviewAbout() {
     EShoppingTheme {
-        MerchantInfoBottomSheet(onDismissRequest = {})
+        MerchantInfoModalContent(
+            merchant = Merchant.items.first(),
+            selectedTab = MerchantInfoTabs.ABOUT,
+            schedule = MerchantSchedule.defaultSchedule,
+            onTabSelected = {},
+            onDismissRequest = {}
+        )
+    }
+}
+@Composable
+@Preview(showBackground = true)
+private fun PreviewSchedule() {
+    EShoppingTheme {
+        MerchantInfoModalContent(
+            merchant = Merchant.items.first(),
+            selectedTab = MerchantInfoTabs.SCHEDULE,
+            schedule = MerchantSchedule.defaultSchedule,
+            onTabSelected = {},
+            onDismissRequest = {}
+        )
     }
 }
