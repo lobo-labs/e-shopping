@@ -46,13 +46,11 @@ fun MerchantAboutPage(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo Placeholder
-        Text(
-            text = merchant.name,
-            fontSize = 42.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF4A4D3A),
-            letterSpacing = 4.sp
+        Box(
+            modifier = Modifier
+                .size(96.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(color = Color.LightGray.copy(alpha = 0.6f))
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -74,7 +72,7 @@ fun MerchantAboutPage(
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Text(
-                text = "Aberto até 14:30",
+                text = schedule.statusLabel,
                 fontSize = 12.sp,
                 color = Color(0xFF4CAF50),
                 fontWeight = FontWeight.Medium

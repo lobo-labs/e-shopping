@@ -13,6 +13,13 @@ data class MerchantSchedule(
             "$openingTime às $closingTime"
         }
 
+    val statusLabel: String
+        get() = if (isClosed || closingTime == null) {
+            "Fechado"
+        } else {
+            "Aberto até $closingTime"
+        }
+
     companion object {
         val defaultSchedule = listOf(
             MerchantSchedule("Segunda-feira", null, null, isClosed = true),
