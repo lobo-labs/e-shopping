@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.data.MerchantSchedule
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantAboutPage
+import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantPaymentPage
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantSchedulePage
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
 
@@ -142,14 +143,7 @@ fun MerchantInfoModalContent(
         when (selectedTab) {
             MerchantInfoTabs.ABOUT -> MerchantAboutPage(merchant, schedule.last())
             MerchantInfoTabs.SCHEDULE -> MerchantSchedulePage(schedule)
-            else -> Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Conteúdo da aba ${selectedTab.text}", color = Color.Gray)
-            }
+            MerchantInfoTabs.PAYMENT -> MerchantPaymentPage()
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -213,6 +207,7 @@ private fun PreviewAbout() {
         )
     }
 }
+
 @Composable
 @Preview(showBackground = true)
 private fun PreviewSchedule() {
@@ -220,6 +215,20 @@ private fun PreviewSchedule() {
         MerchantInfoModalContent(
             merchant = Merchant.items.first(),
             selectedTab = MerchantInfoTabs.SCHEDULE,
+            schedule = MerchantSchedule.defaultSchedule,
+            onTabSelected = {},
+            onDismissRequest = {}
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun PreviewPayment() {
+    EShoppingTheme {
+        MerchantInfoModalContent(
+            merchant = Merchant.items.first(),
+            selectedTab = MerchantInfoTabs.PAYMENT,
             schedule = MerchantSchedule.defaultSchedule,
             onTabSelected = {},
             onDismissRequest = {}
