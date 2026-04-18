@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,9 +55,11 @@ import co.lobolabs.eshopping.data.MenuCategory
 import co.lobolabs.eshopping.data.MenuItem
 import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantCategoryTabs
+import co.lobolabs.eshopping.presentation.merchant.component.MerchantFooter
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantHeader
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantInfoBottomSheet
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantInfoTabs
+import co.lobolabs.eshopping.presentation.merchant.component.ProductDetailBottomSheet
 import co.lobolabs.eshopping.presentation.merchant.component.ShippingMethodBottomSheet
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
 import eshopping.composeapp.generated.resources.Res
@@ -102,6 +106,8 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
 
     var isSearching by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+
+    var selectedItem by remember { mutableStateOf<MenuItem?>(null) }
 
     val filteredItems by remember(searchQuery) {
         derivedStateOf {
@@ -178,12 +184,15 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
                 }
                 if (isLoading) {
                     items(3) {
-                        ProductItem(item = null, isLoading = true)
+                        ProductItem(item = null, isLoading = true, onClick = {})
                     }
                 } else {
                     items(filteredItems) { item ->
-                        ProductItem(item = item, isLoading = false)
+                        ProductItem(item = item, isLoading = false, onClick = { selectedItem = item })
                     }
+                }
+                item {
+                    MerchantFooter(merchant = Merchant.items.first())
                 }
             }
         }
@@ -201,6 +210,17 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
                 onDismiss = { showShippingMethod = false },
                 onConfirm = {
                     showShippingMethod = false
+                }
+            )
+        }
+
+        selectedItem?.let { item ->
+            ProductDetailBottomSheet(
+                item = item,
+                onDismissRequest = { selectedItem = null },
+                onAddToCart = { _, quantity, comment ->
+                    println("Adicionado: ${item.title}, Qtd: $quantity, Obs: $comment")
+                    selectedItem = null
                 }
             )
         }
@@ -284,9 +304,13 @@ fun DeliveryOptions(
 
 
 @Composable
-fun ProductItem(item: MenuItem?, isLoading: Boolean) {
+fun ProductItem(item: MenuItem?, isLoading: Boolean, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = onClick
+        ),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(8.dp),

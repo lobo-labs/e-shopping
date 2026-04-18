@@ -3,6 +3,7 @@ package co.lobolabs.eshopping.presentation.merchant.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,7 +65,7 @@ fun MerchantHeader(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp)
-                    .background(Color(0xFFF8F8F8), RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
                     .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
                     .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -145,7 +147,10 @@ fun MerchantHeader(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(4.dp))
-                        .clickable { onOpenSchedule() }
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { onOpenSchedule() }
                 ) {
                     Text(
                         text = merchant.name,
@@ -157,11 +162,11 @@ fun MerchantHeader(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(RoundedCornerShape(50))
-                                .background(Color(0xFF4CAF50))
+                                .background(if (merchant.isOpen) Color(0xFF4CAF50) else Color(0xFFF4271C))
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Aberto até 14:30",
+                            text = if (merchant.isOpen) "Aberto até 14:30" else "Fechado",
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
@@ -196,14 +201,20 @@ fun MerchantHeader(
                 Icon(
                     painter = painterResource(Res.drawable.ic_search),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp).clickable { onIsSearchingChange(true) },
+                    modifier = Modifier.size(24.dp).clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onIsSearchingChange(true) },
                     tint = Color.DarkGray
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Icon(
                     painter = painterResource(Res.drawable.ic_menu),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(24.dp).clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { /* Abrir menu */ },
                     tint = Color.DarkGray
                 )
             }
@@ -212,7 +223,10 @@ fun MerchantHeader(
             Icon(
                 painter = painterResource(Res.drawable.ic_menu),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp).clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { /* Abrir menu */ },
                 tint = Color.DarkGray
             )
         }
