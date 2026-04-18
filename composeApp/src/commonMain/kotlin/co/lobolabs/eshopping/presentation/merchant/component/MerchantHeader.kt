@@ -1,19 +1,26 @@
 package co.lobolabs.eshopping.presentation.merchant.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,80 +46,170 @@ import org.jetbrains.compose.resources.painterResource
 fun MerchantHeader(
     isLoading: Boolean,
     merchant: Merchant,
+    isSearching: Boolean,
+    onIsSearchingChange: (Boolean) -> Unit,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onOpenSchedule: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .background(color = MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isLoading) {
-            // ... (shimmer loading remains same)
-        } else {
-            // ... (image remains same)
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(color = Color.LightGray.copy(alpha = 0.6f))
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(
+        if (isSearching) {
+            Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onOpenSchedule() }
+                    .fillMaxHeight()
+                    .background(Color(0xFFF8F8F8), RoundedCornerShape(8.dp))
+                    .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = merchant.name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                Icon(
+                    painter = painterResource(Res.drawable.ic_search),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = Color.Gray
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.width(8.dp))
+                BasicTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.weight(1f),
+                    textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
+                    cursorBrush = SolidColor(Color.Black),
+                    decorationBox = { innerTextField ->
+                        if (searchQuery.isEmpty()) {
+                            Text(
+                                text = "Buscar no cardápio",
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+                        }
+                        innerTextField()
+                    }
+                )
+                Button(
+                    onClick = {
+                        onIsSearchingChange(false)
+                        onSearchQueryChange("")
+                    },
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.height(32.dp).width(70.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1A1A1A)
+                    )
+                ) {
+                    Text("Cancelar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        } else {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .shimmerLoadingAnimation()
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Box(
                         modifier = Modifier
-                            .size(8.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(Color(0xFF4CAF50))
+                            .width(120.dp)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .shimmerLoadingAnimation()
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(12.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .shimmerLoadingAnimation()
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(color = Color.LightGray.copy(alpha = 0.6f))
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable { onOpenSchedule() }
+                ) {
                     Text(
-                        text = "Aberto até 14:30",
-                        fontSize = 12.sp,
-                        color = Color.Gray
+                        text = merchant.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
                     )
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.Gray
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(Color(0xFF4CAF50))
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Aberto até 14:30",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Gray
+                        )
+                    }
                 }
             }
         }
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .shimmerLoadingAnimation()
-            )
+
+        if (!isSearching || isLoading) {
             Spacer(modifier = Modifier.width(16.dp))
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .shimmerLoadingAnimation()
-            )
-        } else {
-            Icon(
-                painter = painterResource(Res.drawable.ic_search),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = Color.DarkGray
-            )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmerLoadingAnimation()
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmerLoadingAnimation()
+                )
+            } else {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_search),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp).clickable { onIsSearchingChange(true) },
+                    tint = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.ic_menu),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.DarkGray
+                )
+            }
+        } else if (isSearching) {
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 painter = painterResource(Res.drawable.ic_menu),
@@ -128,7 +227,11 @@ private fun Preview() {
     MaterialTheme {
         MerchantHeader(
             isLoading = false,
-            merchant = Merchant.items.first()
+            merchant = Merchant.items.first(),
+            isSearching = false,
+            onIsSearchingChange = {},
+            searchQuery = "",
+            onSearchQueryChange = {}
         )
     }
 }
@@ -139,7 +242,11 @@ private fun PreviewLoading() {
     MaterialTheme {
         MerchantHeader(
             isLoading = true,
-            merchant = Merchant.items.first()
+            merchant = Merchant.items.first(),
+            isSearching = false,
+            onIsSearchingChange = {},
+            searchQuery = "",
+            onSearchQueryChange = {}
         )
     }
 }

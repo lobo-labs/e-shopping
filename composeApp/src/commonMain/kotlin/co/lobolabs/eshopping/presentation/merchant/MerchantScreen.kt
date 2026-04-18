@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,6 +100,22 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
     var showShippingMethod by remember { mutableStateOf(false) }
     var initialInfoTab by remember { mutableStateOf(MerchantInfoTabs.ABOUT) }
 
+    var isSearching by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredItems by remember(searchQuery) {
+        derivedStateOf {
+            if (searchQuery.isBlank()) {
+                MenuItem.items
+            } else {
+                MenuItem.items.filter {
+                    it.title.contains(searchQuery, ignoreCase = true) ||
+                            it.description.contains(searchQuery, ignoreCase = true)
+                }
+            }
+        }
+    }
+
     if (isLoadingInitial) {
         LaunchedEffect(Unit) {
             delay(3000) // Simula carregamento de 3 segundos
@@ -115,6 +132,10 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
             MerchantHeader(
                 isLoading = isLoading,
                 merchant = Merchant.items.first(),
+                isSearching = isSearching,
+                onIsSearchingChange = { isSearching = it },
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
                 onOpenSchedule = {
                     initialInfoTab = MerchantInfoTabs.SCHEDULE
                     showMerchantInfo = true
@@ -148,7 +169,7 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
                         )
                     } else {
                         Text(
-                            text = "POKE",
+                            text = if (isSearching && searchQuery.isNotBlank()) "RESULTADOS" else "POKE",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(vertical = 16.dp)
@@ -160,7 +181,7 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
                         ProductItem(item = null, isLoading = true)
                     }
                 } else {
-                    items(MenuItem.items) { item ->
+                    items(filteredItems) { item ->
                         ProductItem(item = item, isLoading = false)
                     }
                 }

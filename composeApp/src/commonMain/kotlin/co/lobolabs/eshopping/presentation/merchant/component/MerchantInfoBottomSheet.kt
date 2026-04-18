@@ -6,9 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -56,14 +61,18 @@ fun MerchantInfoBottomSheet(
     schedule: List<MerchantSchedule> = MerchantSchedule.defaultSchedule,
     onDismissRequest: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectedTab by remember { mutableStateOf(initialTab) }
 
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val headerHeight = 80.dp
+    val topPadding = statusBarHeight + headerHeight
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = Color.White,
+        modifier = Modifier.padding(top = topPadding).fillMaxHeight(),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -94,7 +103,7 @@ fun MerchantInfoModalContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(Color.White)
             .padding(bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -141,10 +150,12 @@ fun MerchantInfoModalContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (selectedTab) {
-            MerchantInfoTabs.ABOUT -> MerchantAboutPage(merchant, schedule.last())
-            MerchantInfoTabs.SCHEDULE -> MerchantSchedulePage(schedule)
-            MerchantInfoTabs.PAYMENT -> MerchantPaymentPage()
+        Box(modifier = Modifier.weight(1f)) {
+            when (selectedTab) {
+                MerchantInfoTabs.ABOUT -> MerchantAboutPage(merchant, schedule.last())
+                MerchantInfoTabs.SCHEDULE -> MerchantSchedulePage(schedule)
+                MerchantInfoTabs.PAYMENT -> MerchantPaymentPage()
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
