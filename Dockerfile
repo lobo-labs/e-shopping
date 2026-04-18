@@ -6,11 +6,12 @@ WORKDIR /home/gradle/src
 # Concede permissão de execução ao gradle wrapper
 RUN chmod +x ./gradlew
 
-# Define limites de memória para o Gradle evitar OOM no Render (instâncias com pouca RAM)
-ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.daemon=false"
+# Define limites de memória agressivos para instâncias gratuitas do Render (512MB RAM)
+# Reduzimos o heap do Gradle e da JVM para caber no limite
+ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx512m -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1"
 
-# Executa o build com stacktrace para diagnosticar erros no log do Render
-RUN ./gradlew :server:installDist --no-daemon --stacktrace --info
+# Executa o build. Usamos --no-configuration-cache para evitar problemas em ambientes Docker
+RUN ./gradlew :server:installDist --no-daemon --no-configuration-cache --stacktrace
 
 # Estágio 2: Imagem de execução
 FROM eclipse-temurin:11-jre-focal
