@@ -4,11 +4,12 @@ COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 
 # Executa o build do servidor e do frontend web
-# A task :server:installDist já inclui o frontend web graças à configuração que fizemos no build.gradle.kts
 RUN ./gradlew :server:installDist --no-daemon
 
 # Estágio 2: Imagem de execução
-FROM openjdk:11-jre-slim
+# O openjdk:11-jre-slim foi descontinuado/removido de alguns registros.
+# Usando eclipse-temurin que é a alternativa oficial e recomendada.
+FROM eclipse-temurin:11-jre-focal
 EXPOSE 8080
 
 # Cria o diretório da aplicação
@@ -17,8 +18,11 @@ COPY --from=build /home/gradle/src/server/build/install/server /app/
 
 WORKDIR /app
 
-# Define a porta padrão via variável de ambiente (pode ser sobrescrita no docker run)
+# Define a porta padrão via variável de ambiente (O Render define a PORT automaticamente)
 ENV PORT=8080
+
+# Garante permissão de execução para o script
+RUN chmod +x ./bin/server
 
 # Inicia o servidor
 CMD ["./bin/server"]
