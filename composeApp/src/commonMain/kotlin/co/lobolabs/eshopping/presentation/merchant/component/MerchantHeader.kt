@@ -5,11 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,16 +53,16 @@ fun MerchantHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min)
+            .height(80.dp)
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isSearching) {
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
+                    .height(48.dp)
                     .background(Color(0xFFF8F8F8), RoundedCornerShape(8.dp))
                     .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
                     .padding(horizontal = 12.dp),
@@ -231,6 +229,21 @@ private fun Preview() {
             isSearching = false,
             onIsSearchingChange = {},
             searchQuery = "",
+            onSearchQueryChange = {}
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun PreviewSearching() {
+    MaterialTheme {
+        MerchantHeader(
+            isLoading = false,
+            merchant = Merchant.items.first(),
+            isSearching = true,
+            onIsSearchingChange = {},
+            searchQuery = "Poke",
             onSearchQueryChange = {}
         )
     }
