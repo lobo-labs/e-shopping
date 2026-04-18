@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,9 @@ import co.lobolabs.eshopping.data.MenuItem
 import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantCategoryTabs
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantHeader
+import co.lobolabs.eshopping.presentation.merchant.component.MerchantInfoBottomSheet
+import co.lobolabs.eshopping.presentation.merchant.component.MerchantInfoTabs
+import co.lobolabs.eshopping.presentation.merchant.component.ShippingMethodBottomSheet
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
 import eshopping.composeapp.generated.resources.Res
 import eshopping.composeapp.generated.resources.ic_delivery
@@ -91,6 +95,9 @@ fun Modifier.shimmerLoadingAnimation(): Modifier = composed {
 @Composable
 fun MerchantScreen(isLoadingInitial: Boolean = true) {
     var isLoading by remember { mutableStateOf(isLoadingInitial) }
+    var showMerchantInfo by remember { mutableStateOf(false) }
+    var showShippingMethod by remember { mutableStateOf(false) }
+    var initialInfoTab by remember { mutableStateOf(MerchantInfoTabs.ABOUT) }
 
     if (isLoadingInitial) {
         LaunchedEffect(Unit) {
@@ -98,8 +105,6 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
             isLoading = false
         }
     }
-
-
 
     Box(
         modifier = Modifier.fillMaxSize().background(Color.White)
@@ -109,9 +114,18 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
         ) {
             MerchantHeader(
                 isLoading = isLoading,
-                merchant = Merchant.items.first()
+                merchant = Merchant.items.first(),
+                onOpenSchedule = {
+                    initialInfoTab = MerchantInfoTabs.SCHEDULE
+                    showMerchantInfo = true
+                }
             )
-            DeliveryOptions(isLoading = isLoading)
+            DeliveryOptions(
+                isLoading = isLoading,
+                onOpenDeliveryInfo = {
+                    showShippingMethod = true
+                }
+            )
             MerchantCategoryTabs(
                 isLoading = isLoading,
                 categories = MenuCategory.items
@@ -153,13 +167,30 @@ fun MerchantScreen(isLoadingInitial: Boolean = true) {
             }
         }
 
-        // CookieConsent(modifier = Modifier.align(Alignment.BottomCenter))
+        if (showMerchantInfo) {
+            MerchantInfoBottomSheet(
+                merchant = Merchant.items.first(),
+                initialTab = initialInfoTab,
+                onDismissRequest = { showMerchantInfo = false }
+            )
+        }
+
+        if (showShippingMethod) {
+            ShippingMethodBottomSheet(
+                onDismiss = { showShippingMethod = false },
+                onConfirm = {
+                    showShippingMethod = false
+                }
+            )
+        }
     }
 }
 
-
 @Composable
-fun DeliveryOptions(isLoading: Boolean) {
+fun DeliveryOptions(
+    isLoading: Boolean,
+    onOpenDeliveryInfo: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +219,8 @@ fun DeliveryOptions(isLoading: Boolean) {
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color(0xFFDEE2E6)),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                onClick = onOpenDeliveryInfo
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
@@ -214,7 +246,8 @@ fun DeliveryOptions(isLoading: Boolean) {
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color(0xFFDEE2E6)),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                onClick = onOpenDeliveryInfo
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),

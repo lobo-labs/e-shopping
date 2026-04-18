@@ -52,11 +52,12 @@ enum class MerchantInfoTabs(val text: String) {
 @Composable
 fun MerchantInfoBottomSheet(
     merchant: Merchant,
+    initialTab: MerchantInfoTabs = MerchantInfoTabs.ABOUT,
     schedule: List<MerchantSchedule> = MerchantSchedule.defaultSchedule,
     onDismissRequest: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
-    var selectedTab by remember { mutableStateOf(MerchantInfoTabs.ABOUT) }
+    var selectedTab by remember { mutableStateOf(initialTab) }
 
 
     ModalBottomSheet(
