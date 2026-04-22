@@ -5,7 +5,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import co.lobolabs.ebalance.presentation.theme.DSColor
 
 private val LightColorScheme = lightColorScheme(
     primary = DSColor.blackColor,
@@ -24,7 +23,7 @@ private val LightColorScheme = lightColorScheme(
 private val DarkColorScheme = darkColorScheme(
     primary = DSColor.whiteColor,
     onPrimary = DSColor.appGreenDarkColor,
-    secondary = DSColor.appGreenColor,
+    secondary = DSColor.Green,
     onSecondary = DSColor.whiteColor,
     background = DSColor.appGreenDarkColor,
     onBackground = DSColor.whiteColor,

@@ -35,8 +35,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import co.lobolabs.eshopping.data.Merchant
-import co.lobolabs.eshopping.presentation.merchant.shimmerLoadingAnimation
+import co.lobolabs.eshopping.merchant.MerchantMock
+import co.lobolabs.eshopping.merchant.MerchantResponse
+import co.lobolabs.eshopping.presentation.ui.DSColor
+import co.lobolabs.eshopping.presentation.ui.extension.shimmerLoadingAnimation
 import eshopping.composeapp.generated.resources.Res
 import eshopping.composeapp.generated.resources.ic_menu
 import eshopping.composeapp.generated.resources.ic_search
@@ -45,12 +47,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MerchantHeader(
     isLoading: Boolean,
-    merchant: Merchant,
+    merchant: MerchantResponse?,
     isSearching: Boolean,
     onIsSearchingChange: (Boolean) -> Unit,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onOpenSchedule: () -> Unit = {}
+    onOpenMerchantInfo: (MerchantInfoTabs) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -141,6 +143,9 @@ fun MerchantHeader(
                         .size(48.dp)
                         .clip(RoundedCornerShape(14.dp))
                         .background(color = Color.LightGray.copy(alpha = 0.6f))
+                        .clickable {
+                            onOpenMerchantInfo(MerchantInfoTabs.ABOUT)
+                        }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
@@ -150,10 +155,12 @@ fun MerchantHeader(
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { onOpenSchedule() }
+                        ) {
+                            onOpenMerchantInfo(MerchantInfoTabs.SCHEDULE)
+                        }
                 ) {
                     Text(
-                        text = merchant.name,
+                        text = merchant?.name.orEmpty(),
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
@@ -162,11 +169,15 @@ fun MerchantHeader(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(RoundedCornerShape(50))
-                                .background(if (merchant.isOpen) Color(0xFF4CAF50) else Color(0xFFF4271C))
+                                .background(
+                                    color = DSColor.Open.takeIf {
+                                        merchant?.isOpen == true
+                                    } ?: DSColor.Closed
+                                )
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (merchant.isOpen) "Aberto até 14:30" else "Fechado",
+                            text = merchant?.scheduleStatus.orEmpty(),
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
@@ -239,7 +250,7 @@ private fun Preview() {
     MaterialTheme {
         MerchantHeader(
             isLoading = false,
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             isSearching = false,
             onIsSearchingChange = {},
             searchQuery = "",
@@ -254,10 +265,10 @@ private fun PreviewSearching() {
     MaterialTheme {
         MerchantHeader(
             isLoading = false,
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             isSearching = true,
             onIsSearchingChange = {},
-            searchQuery = "Poke",
+            searchQuery = "Smash duplo",
             onSearchQueryChange = {}
         )
     }
@@ -269,7 +280,7 @@ private fun PreviewLoading() {
     MaterialTheme {
         MerchantHeader(
             isLoading = true,
-            merchant = Merchant.items.first(),
+            merchant = null,
             isSearching = false,
             onIsSearchingChange = {},
             searchQuery = "",

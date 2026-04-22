@@ -1,27 +1,39 @@
 package co.lobolabs.eshopping
 
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.http.content.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import co.lobolabs.eshopping.features.merchant.domain.route.getMerchantRoute
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.http.content.staticResources
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 
 fun main() {
-    val port = System.getenv("PORT")?.toInt() ?: SERVER_PORT
+    val port = System.getenv("PORT")?.toInt() ?: 8080
     embeddedServer(Netty, port = port, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 
 fun Application.module() {
+    install(ContentNegotiation) {
+        json()
+    }
+
     routing {
-        // Serve a aplicação Web (Wasm/JS) a partir da pasta resources/dist
+
         staticResources("/", "dist") {
             default("index.html")
         }
 
-        get("/api") {
+        get("/api/health") {
             call.respondText("API is running!")
         }
+
+        getMerchantRoute()
+
     }
 }

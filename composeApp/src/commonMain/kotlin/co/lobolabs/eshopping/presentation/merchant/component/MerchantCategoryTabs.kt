@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.lobolabs.eshopping.data.MenuCategory
-import co.lobolabs.eshopping.presentation.merchant.shimmerLoadingAnimation
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
+import co.lobolabs.eshopping.presentation.ui.extension.shimmerLoadingAnimation
 
 @Composable
 fun MerchantCategoryTabs(

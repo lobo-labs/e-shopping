@@ -1,4 +1,4 @@
-package co.lobolabs.ebalance.presentation.theme
+package co.lobolabs.eshopping.presentation.ui
 
 import androidx.compose.ui.graphics.Color
 
@@ -14,8 +14,11 @@ object DSColor {
     val greenColor = Color(0xFF28A745)
     val blueColor = Color(0xFF17A2B8)
 
-    val appGreenColor = Color(0xFF0A6375)
-    val appGreenLightColor = Color(0xFF2FA1B9)
+    val Open = Color(0xFF4CAF50)
+    val Closed = Color(0xFFF4271C)
+
+    val Green = Color(0xFF0A6375)
+    val GreenLight = Color(0xFF2FA1B9)
     val appGreenLighterColor = Color(0xFF6AE4FC)
 
     val appGrayColor = Color(0xFFF3F4F6)
