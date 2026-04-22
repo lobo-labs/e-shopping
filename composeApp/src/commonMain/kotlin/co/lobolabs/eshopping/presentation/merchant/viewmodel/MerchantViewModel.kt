@@ -1,6 +1,7 @@
 package co.lobolabs.eshopping.presentation.merchant.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.lobolabs.eshopping.data.repository.MerchantRepositoryImpl
 import co.lobolabs.eshopping.domain.MerchantRepository
 import kotlinx.coroutines.channels.Channel
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class MerchantViewModel(
     private val repository: MerchantRepository = MerchantRepositoryImpl()
@@ -20,30 +22,39 @@ internal class MerchantViewModel(
 
     fun onIntent(intent: MerchantIntent) {
         when (intent) {
-            is MerchantIntent.GetMerchant -> {
-                runCatching {
-                    _state.update { it.copy(isLoading = true) }
-                    val merchant = repository.getMerchant(intent.merchantId)
-                    if (merchant == null) {
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                merchant = null,
-                                error = "merchant not found"
-                            )
-                        }
-                        return
-                    }
-                    _state.update { it.copy(isLoading = false, merchant = merchant, error = null) }
-                }.onFailure {
+            is MerchantIntent.GetMerchant -> getMerchant(intent)
+        }
+    }
+
+    private fun getMerchant(intent: MerchantIntent.GetMerchant) {
+        viewModelScope.launch {
+            runCatching {
+                _state.update { it.copy(isLoading = true) }
+                print("---> loading")
+                val merchant = repository.getMerchant(intent.merchantId)
+                print("---> merchant: $merchant")
+                if (merchant == null) {
                     _state.update {
                         it.copy(
                             isLoading = false,
                             merchant = null,
-                            error = "get merchant fail"
+                            error = "merchant not found"
                         )
                     }
+                    print("---> merchant null")
+                    return@launch
                 }
+                _state.update { it.copy(isLoading = false, merchant = merchant, error = null) }
+                print("---> merchant success")
+            }.onFailure {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        merchant = null,
+                        error = "get merchant fail"
+                    )
+                }
+                print("---> merchant fail: $it")
             }
         }
     }
