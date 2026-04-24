@@ -129,22 +129,30 @@ private fun MerchantScreenContent(
                     showMerchantInfo = true
                 }
             )
-            MerchantDeliveryOptions(
-                isLoading = state.isLoading,
-                onOpenDeliveryInfo = {
-                    showShippingMethod = true
-                }
-            )
-            MerchantCategoryTabs(
-                isLoading = state.isLoading,
-                categories = MenuCategory.items
-            )
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 200.dp)
             ) {
+                item {
+                    MerchantDeliveryOptions(
+                        isLoading = state.isLoading,
+                        onOpenDeliveryInfo = {
+                            showShippingMethod = true
+                        }
+                    )
+                }
+
+                stickyHeader {
+                    Box(modifier = Modifier.background(Color.White)) {
+                        MerchantCategoryTabs(
+                            isLoading = state.isLoading,
+                            categories = MenuCategory.items
+                        )
+                    }
+                }
+
                 item {
                     if (state.isLoading) {
                         Box(
