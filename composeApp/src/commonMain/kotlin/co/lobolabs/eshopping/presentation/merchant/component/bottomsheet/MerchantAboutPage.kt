@@ -25,18 +25,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.data.MerchantSchedule
+import co.lobolabs.eshopping.merchant.MerchantMock
+import co.lobolabs.eshopping.merchant.MerchantResponse
 import co.lobolabs.eshopping.presentation.ui.EShoppingTheme
 import eshopping.composeapp.generated.resources.Res
 import eshopping.composeapp.generated.resources.ic_location
-import eshopping.composeapp.generated.resources.ic_location_map
 import eshopping.composeapp.generated.resources.ic_whatsapp
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MerchantAboutPage(
-    merchant: Merchant,
+    merchant: MerchantResponse?,
     schedule: MerchantSchedule
 ) {
     Column(
@@ -56,7 +56,7 @@ fun MerchantAboutPage(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = merchant.name,
+            text = merchant?.name.orEmpty(),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -101,7 +101,7 @@ fun MerchantAboutPage(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = merchant.address,
+                    text = merchant?.address.orEmpty(),
                     fontSize = 14.sp,
                     color = Color.Gray,
                     lineHeight = 20.sp
@@ -140,7 +140,7 @@ fun MerchantAboutPage(
                         .background(Color(0xFFF5F5F5)),
                     contentAlignment = Alignment.Center
                 ) {
-                     Icon(
+                    Icon(
                         painter = painterResource(Res.drawable.ic_whatsapp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
@@ -164,7 +164,7 @@ fun MerchantAboutPage(
 private fun Preview() {
     EShoppingTheme {
         MerchantAboutPage(
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             schedule = MerchantSchedule.defaultSchedule.last()
         )
     }

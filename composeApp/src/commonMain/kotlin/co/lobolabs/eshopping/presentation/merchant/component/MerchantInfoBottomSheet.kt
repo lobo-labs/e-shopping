@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.data.MerchantSchedule
+import co.lobolabs.eshopping.merchant.MerchantMock
+import co.lobolabs.eshopping.merchant.MerchantResponse
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantAboutPage
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantPaymentPage
 import co.lobolabs.eshopping.presentation.merchant.component.bottomsheet.MerchantSchedulePage
@@ -56,7 +58,7 @@ enum class MerchantInfoTabs(val text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MerchantInfoBottomSheet(
-    merchant: Merchant,
+    merchant: MerchantResponse?,
     initialTab: MerchantInfoTabs = MerchantInfoTabs.ABOUT,
     schedule: List<MerchantSchedule> = MerchantSchedule.defaultSchedule,
     onDismissRequest: () -> Unit
@@ -95,7 +97,7 @@ fun MerchantInfoBottomSheet(
 
 @Composable
 fun MerchantInfoModalContent(
-    merchant: Merchant,
+    merchant: MerchantResponse?,
     selectedTab: MerchantInfoTabs,
     schedule: List<MerchantSchedule>,
     onTabSelected: (MerchantInfoTabs) -> Unit,
@@ -211,7 +213,7 @@ fun MerchantScheduleRow(day: String, hours: String, isHighlighted: Boolean) {
 private fun PreviewAbout() {
     EShoppingTheme {
         MerchantInfoModalContent(
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             selectedTab = MerchantInfoTabs.ABOUT,
             schedule = MerchantSchedule.defaultSchedule,
             onTabSelected = {},
@@ -225,7 +227,7 @@ private fun PreviewAbout() {
 private fun PreviewSchedule() {
     EShoppingTheme {
         MerchantInfoModalContent(
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             selectedTab = MerchantInfoTabs.SCHEDULE,
             schedule = MerchantSchedule.defaultSchedule,
             onTabSelected = {},
@@ -239,7 +241,7 @@ private fun PreviewSchedule() {
 private fun PreviewPayment() {
     EShoppingTheme {
         MerchantInfoModalContent(
-            merchant = Merchant.items.first(),
+            merchant = MerchantMock.merchants.first(),
             selectedTab = MerchantInfoTabs.PAYMENT,
             schedule = MerchantSchedule.defaultSchedule,
             onTabSelected = {},

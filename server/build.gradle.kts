@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.serverContentNegotiation)
+    implementation("io.ktor:ktor-server-cors-jvm:${libs.versions.ktor.get()}")
     implementation(libs.ktor.serializationJson)
     
     implementation(libs.ktorm.core)

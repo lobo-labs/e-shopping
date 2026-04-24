@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,10 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.lobolabs.eshopping.data.MenuCategory
 import co.lobolabs.eshopping.data.MenuItem
-import co.lobolabs.eshopping.data.Merchant
 import co.lobolabs.eshopping.merchant.MerchantMock
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantCategoryTabs
 import co.lobolabs.eshopping.presentation.merchant.component.MerchantDeliveryOptions
@@ -50,10 +49,14 @@ import co.lobolabs.eshopping.presentation.ui.extension.shimmerLoadingAnimation
 
 @Composable
 internal fun MerchantScreen(
-    viewModel: MerchantViewModel = MerchantViewModel()
+    viewModel: MerchantViewModel = remember { MerchantViewModel() }
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle().value
-    val effect = viewModel.effect.collectAsStateWithLifecycle(null).value
+    val state by viewModel.state.collectAsState()
+    val effect by viewModel.effect.collectAsState(null)
+
+    LaunchedEffect(state.merchant) {
+        println("---> UI State Merchant: ${state.merchant?.name} (Loading: ${state.isLoading})")
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(MerchantIntent.GetMerchant(merchantId = 1))
@@ -177,14 +180,14 @@ private fun MerchantScreenContent(
                     }
                 }
                 item {
-                    MerchantFooter(merchant = Merchant.items.first())
+                    MerchantFooter(merchant = state.merchant)
                 }
             }
         }
 
         if (showMerchantInfo) {
             MerchantInfoBottomSheet(
-                merchant = Merchant.items.first(),
+                merchant = state.merchant,
                 initialTab = initialMerchantInfoTab,
                 onDismissRequest = { showMerchantInfo = false }
             )
